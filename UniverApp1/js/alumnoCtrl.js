@@ -5,10 +5,16 @@ app.controller('alumnoCtrl', ['$scope','$routeParams','$http', function($scope,$
 	 var codigo = $routeParams.codigo;
 
 	 $scope.actualizado=false;
+	 $scope.alumno = {};
 
-	$scope.alumno = {};
+	 $creando = false;
 
-	$http.get('php/servicios/alumnos.getAlumno.php?c=' +codigo).success(function(data){
+	 if (codigo =="nuevo") {
+	 	$scope.creando = true;
+
+	 }else{
+
+	 	$http.get('php/servicios/alumnos.getAlumno.php?c=' +codigo).success(function(data){
 
 
 		if(data.err !== undefined){
@@ -21,7 +27,31 @@ app.controller('alumnoCtrl', ['$scope','$routeParams','$http', function($scope,$
 
 	});
 
+	}
+
+
+	
+
 	$scope.guardarAlumno = function (){
+
+		if($scope.creando){
+
+		$http.post('php/servicios/alumnos.crear.php', $scope.alumno).success(function(data){
+
+			if (data.err === false){
+				$scope.actualizado = true;
+
+				setTimeout(function() {
+					$scope.actualizado = false;
+					$scope.$apply();
+				},3500);
+
+			};
+			
+
+		});
+
+	}else{
 
 		$http.post('php/servicios/alumnos.guardar.php', $scope.alumno).success(function(data){
 
@@ -32,13 +62,15 @@ app.controller('alumnoCtrl', ['$scope','$routeParams','$http', function($scope,$
 					$scope.actualizado = false;
 					$scope.$apply();
 				},3500);
-				
+
 			};
 			
 
 		});
 
-	}
 
+
+	}
+}
 
 }]);
